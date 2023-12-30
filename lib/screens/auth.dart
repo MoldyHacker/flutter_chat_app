@@ -57,7 +57,8 @@ class _AuthScreenState extends State<AuthScreen> {
             .child('user_images')
             .child('${userCredentials.user!.uid}.jpg');
 
-        await storageRef.putFile(_selectedImage!, SettableMetadata(contentType: 'image/jpg'));
+        await storageRef.putFile(
+            _selectedImage!, SettableMetadata(contentType: 'image/jpg'));
         final imageUrl = await storageRef.getDownloadURL();
         print(imageUrl);
       }
@@ -71,6 +72,9 @@ class _AuthScreenState extends State<AuthScreen> {
             content: Text(e.message ?? 'Authentication failed.'),
           ),
         );
+        setState(() {
+          _isAuthenticating = false;
+        });
       }
     }
   }
@@ -150,25 +154,29 @@ class _AuthScreenState extends State<AuthScreen> {
                           const SizedBox(
                             height: 12,
                           ),
-                          ElevatedButton(
-                            onPressed: _submit,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .primaryContainer,
+                          if (_isAuthenticating)
+                            const CircularProgressIndicator(),
+                          if (!_isAuthenticating)
+                            ElevatedButton(
+                              onPressed: _submit,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context)
+                                    .colorScheme
+                                    .primaryContainer,
+                              ),
+                              child: Text(_isLogin ? 'Login' : 'Sign up'),
                             ),
-                            child: Text(_isLogin ? 'Login' : 'Sign up'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _isLogin = !_isLogin;
-                              });
-                            },
-                            child: Text(_isLogin
-                                ? 'Create new account'
-                                : 'I already have an account'),
-                          ),
+                          if (!_isAuthenticating)
+                            TextButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isLogin = !_isLogin;
+                                });
+                              },
+                              child: Text(_isLogin
+                                  ? 'Create new account'
+                                  : 'I already have an account'),
+                            ),
                         ],
                       ),
                     ),
