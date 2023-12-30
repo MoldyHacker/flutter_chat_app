@@ -22,13 +22,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final token = await fcm.getToken(); // send to backend to store for later use with user
     print(token);
 
-    // FirebaseMessaging.onMessage.listen((message) {
-    //   print(message);
-    // });
-
-    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    //   print(message);
-    // });
+    fcm.subscribeToTopic('chat');
   }
 
   @override
